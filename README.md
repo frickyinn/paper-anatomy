@@ -5,7 +5,7 @@ A [Claude Code](https://claude.com/claude-code) skill that turns an AI paper int
 Each note has three parts:
 
 1. **地基 (foundation)**: the 3–8 concepts you need before the paper makes sense.
-2. **骨干 (backbone)**: the paper's logical tree (task, challenges, key insight, pipeline, contributions with evidence, results). Every node cites its location in the paper.
+2. **骨干 (backbone)**: the paper's logical tree (task, the 2–3 prior works that give the method its frame and the one change its result rests on, challenges, key insight, pipeline, contributions with evidence, results). Every node cites its location in the paper.
 3. **领域知识卡 (field card)**: challenges, solutions and failure cases stated about the field, each tagged as stated by the paper or inferred, with testable failure hypotheses.
 
 Up to three key figures (teaser, method overview, a result figure) are embedded where they belong, each with a one-line reading hint.

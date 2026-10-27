@@ -7,7 +7,7 @@ description: Digest an AI paper into a Chinese reading note — foundation conce
 
 Reading a paper has two stages. First the reader needs the **地基** (foundation): the concepts the paper stands on. Only then can they follow the **增量** (delta): what this paper adds to its field. The note serves both stages in that order, then distills what the reader came for: the field's challenges and solutions.
 
-The reader is an AI graduate student who knows deep learning fundamentals. The note is Chinese prose; technical terms keep their English form, with a Chinese gloss on first use.
+The reader is an AI graduate student who knows deep learning fundamentals. The note is Chinese prose, and every technical term stays in its English form. A term the reader already uses (behavior cloning, encoder, backbone, token, flow matching, fine-tuning, reward) appears bare; a term from outside that baseline gets a short Chinese gloss in parentheses on first use.
 
 Math is TeX inside delimiters, always: every symbol, subscript, Greek letter, operator and formula, even a lone variable in prose or a model name like $\pi_{0.6}$. Inline math is `$\gamma^{t}$`, with no space just inside either `$`. A formula worth its own line is a display block, with `$$` on separate lines:
 
@@ -47,7 +47,7 @@ Then choose up to 3 figures by role. Each `[image: URL]` line is followed by its
 - **overview**: the method pipeline or system architecture.
 - **result**: evidence for one Contribution or Finding that no table carries.
 
-A role with no fitting figure stays empty. Download every image of a chosen figure to `<vault>/assets/<id>/figs/fig<N>.<ext>`, with subfigure panels as `fig<N>a`, `fig<N>b`, … (`mkdir -p <vault>/assets/<id>/figs && curl -sL -o <vault>/assets/<id>/figs/fig<N>.<ext> <URL>`), skipping files already there, and Read each image.
+A role with no fitting figure stays empty. Download every image of a chosen figure to `<vault>/assets/<id>/figs/fig<N>.<ext>`, with subfigure panels as `fig<N>a`, `fig<N>b`, … (`mkdir -p <vault>/assets/<id>/figs && curl -sL -o <vault>/assets/<id>/figs/fig<N>.<ext> <URL>`), skipping files already there, and Read each image. An `.svg` figure is markup: Read shows its source text, not the picture, so judge it from its caption and the labels in that text.
 
 Done when you have read every section of the main text and seen every chosen figure.
 
@@ -65,7 +65,24 @@ A mixed paper takes the tree of its dominant type; its secondary product becomes
 
 Build the tree for the paper's type from the templates below. Organise it by logical role, not by section order: abstract, introduction and method restate the same nodes at increasing detail, so merge them into one node and cite the most specific location.
 
+Every paper is A + B + Δ: it keeps the frame of a few earlier works and changes or adds parts. Each tree below opens with its first node (Task, Target or Question) followed by two lineage nodes:
+
+```
+- **Builds on**：
+  - <前作 A>：沿用 <哪一部分：结构 / 表征 / 训练方法 / 数据 / 评测协议>（§…）
+  - <前作 B>：…
+- **Key delta**：<Contribution n 的名称>
+  - 价值：<它让上面的前作单独做不到的什么成为可能>
+  - 证据：<哪个实验把这一处和其他改动分开，带数字>；没有时写明对比双方实际差在哪，以及论文干净隔离了的是哪一条
+```
+
+Builds on holds at most 3 works that give the method its frame: the model it starts from, the method it modifies, the architecture idea it carries over. A work enters when removing it would change the shape of the method; a renderer, segmenter, text encoder, control stack, optimizer or training dataset that an equivalent could replace stays out. For a Benchmark/数据集类 paper, the earlier dataset or benchmark it extends or replaces; for an 分析类 paper, the methods or claims it examines.
+
+Key delta picks the one contribution the result rests on and judges how cleanly the experiments isolate it. Read the setup of each comparison it cites (same data, same backbone, same size) before calling it clean. Where the paper's wording claims more ("the first", "a new paradigm"), 价值 states what actually differs.
+
 Every node carries its **出处** (location) in parentheses: `(§3.2)`, `(Table 2)`, `(Fig. 3)`, `(Eq. 4)`. Write `论文未说明` when the paper is silent. An empty node is better than an invented one.
+
+A result the paper reports only in a figure gets `仅图示` where the number would go, the figure as its 出处, and the paper's own sentence about it: `证据：仅图示，成功率随示教数单调上升 (Fig. 5)`.
 
 **方法类**
 
@@ -80,6 +97,7 @@ Every node carries its **出处** (location) in parentheses: `(§3.2)`, `(Table 
 - **Pipeline**：第一步 … → 第二步 … → 第三步 …
 - **Contribution 1**：<名称>
   - 解决：Challenge <n>
+  - 相对：<它替换了哪个前作的哪一部分>，或「新增」
   - 做法：…
   - 为什么 work：…
   - 证据：<哪个对比或消融支持它，带数字>；没有实验单独验证它时写「无直接证据」
@@ -118,7 +136,7 @@ Every node carries its **出处** (location) in parentheses: `(§3.2)`, `(Table 
 
 A term the paper coins (its own module names, loss names, model names) is defined inside the backbone node where it first appears.
 
-Done when every node has content or `论文未说明`, every node has an 出处, and every Contribution has its 解决 and 证据 lines.
+Done when every node has content or `论文未说明`, every node has an 出处, Builds on holds at most 3 frame works each with the part kept, Key delta names one Contribution with its 证据 judged, and every Contribution has its 解决, 相对 and 证据 lines.
 
 ### 4. Choose the foundation
 
@@ -136,7 +154,7 @@ Keep 3–8 concepts. Terms the paper coins already live in the backbone. Order t
 
 The field card is the reason the note exists: knowledge about the **field** that outlives this one paper. Phrase each item as a statement about the field, not a description of the paper ("长时程任务中稀疏奖励使 credit assignment 失效", not "论文指出 baseline 不行").
 
-Tag every item `[论文]` when the paper states it, or `[推断]` when you infer it. Every `[推断]` names its **依据**, the paper location it rests on. An inference without an 依据 is left out.
+Tag every item `[论文]` when the paper states it, or `[推断]` when you infer it. Every `[推断]` names its **依据**, the paper location it rests on, and every fact it uses is one the paper states there: the inference adds reasoning, never facts from outside the paper. An inference without an 依据 is left out.
 
 - **Challenges**: open problems drawn from the motivation, the stated limitations, and the failure cases.
 - **Solutions**: the method as a reusable technique, the key insight in a form applicable beyond this task, and the future directions the paper names.
@@ -155,7 +173,7 @@ Tag every item `[论文]` when the paper states it, or `[推断]` when you infer
 
 ### 6. Write the TL;DR
 
-One sentence stating the 增量. For a method paper: 在 <task> 上，针对 <challenge>，用 <insight>，做到 <result>. For other types, use the same shape: what was missing, what the paper supplies, and what it showed.
+One sentence stating the Key delta against Builds on. For a method paper: 在 <A> 的基础上，<加 / 换> <Δ>，在 <task> 上做到 <result>, where <result> is a number against a named baseline, not a capability. For other types, use the same shape: what it builds on, what it adds, and what that showed.
 
 ### 7. Write the note and check it
 
@@ -189,17 +207,19 @@ Write `<vault>/<id>-<slug>.md`. The slug is the method or model name, else 2–4
 
 Each chosen figure sits at its slot: the teaser under the TL;DR, the overview inside the Pipeline node, a result figure inside the node whose 证据 it is, indented to that node. Image paths are relative to the note. Under each image, one italic 读图提示 line gives the Fig. number and says what to look at and which backbone node it maps to; the paper's caption stays in the paper.
 
-Budget: 地基 about 25%, 骨干 about 45%, 知识卡 about 30%. `wc -m` on the note falls between 2500 and 6000. When over budget, cut detail inside nodes; every node stays.
+Budget scales with the paper: `python3 -I <skill>/budget.py <vault>/assets/<id>/src/<id>.txt` prints `budget <lo>-<hi>`; for a PDF, pass `--pages <pages before the references> --columns <1 or 2>` instead. Split it as 地基 about 25%, 骨干 about 45%, 知识卡 about 30%. The note without its image and 读图提示 lines, `grep -vE '^[[:space:]]*(!\[|\*（Fig)' <note> | wc -m`, falls between lo and hi. When over budget, cut detail inside nodes; every node stays.
 
 Check the note against every line below and fix each miss:
 
 - [ ] Every backbone node has an 出处 or `论文未说明`.
-- [ ] Every Contribution names the Challenge it solves and its 证据.
+- [ ] Builds on has at most 3 frame works, each with the part kept and its 出处, and no tool, dataset or generic component; Key delta names one Contribution and how cleanly its 证据 isolates it.
+- [ ] Every Contribution names the Challenge it solves, what it replaces (相对) and its 证据.
+- [ ] Terms the reader already uses are in bare English; only terms beyond that baseline carry a Chinese gloss, once.
 - [ ] The 地基 has 3–8 concepts. None is coined by the paper and none is baseline knowledge.
-- [ ] Every field-card item is tagged, and every `[推断]` names an 依据.
+- [ ] Every field-card item is tagged, and every `[推断]` names an 依据 that states each fact it uses.
 - [ ] There are at most 3 failure hypotheses, each with all four fields.
 - [ ] Every chosen figure is embedded at its slot, its file exists under `<vault>/assets/<id>/figs/`, and a 读图提示 line follows it.
-- [ ] `wc -m` is between 2500 and 6000.
+- [ ] The count without image and 读图提示 lines is within the budget.py range.
 - [ ] `python3 -I <skill>/check_math.py <note>` prints nothing.
 
 Done when every box passes. Reply with the TL;DR and the note's path only.

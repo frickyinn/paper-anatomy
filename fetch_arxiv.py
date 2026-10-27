@@ -49,8 +49,8 @@ class Flatten(HTMLParser):
             self.out.append(" | ")
         elif tag in BLOCK:
             self.out.append(" " if self.cell and tag != "tr" else "\n")
-        elif tag == "img" and "ltx_graphics" in cls:
-            self.out.append(f"\n[image: {urljoin(self.base, a.get('src', ''))}]\n")
+        elif tag in ("img", "object") and "ltx_graphics" in cls:  # SVG figures come as <object data=…>
+            self.out.append(f"\n[image: {urljoin(self.base, a.get('src') or a.get('data', ''))}]\n")
 
     def handle_endtag(self, tag):
         if self.skip:
@@ -84,6 +84,8 @@ def flatten(html, base):
 
 
 def main():
+    if len(sys.argv) != 3 or sys.argv[1].startswith("-"):
+        sys.exit(__doc__)
     arxiv_id, out_dir = sys.argv[1], sys.argv[2]
     url = f"https://arxiv.org/html/{arxiv_id}"
     try:
@@ -107,8 +109,9 @@ if __name__ == "__main__":
         t = flatten('<nav>x</nav><h2>1 Intro</h2><p>a <math alttext="x^2"><mi>x</mi></math> b</p>'
                     '<section class="ltx_bibliography"><p>ref</p></section>'
                     '<img class="ltx_graphics" src="1v2/f/a.png">'
+                    '<object type="image/svg+xml" class="ltx_graphics" data="1v2/f/b.svg"></object>'
                     '<table><tr><td><p>A</p></td><td>1</td></tr><tr><td>B</td><td>2</td></tr></table>', "https://arxiv.org/html/1v2")
-        assert t == "## 1 Intro\n\na $x^2$ b\n\n[image: https://arxiv.org/html/1v2/f/a.png]\n\n| A | 1\n\n| B | 2\n", repr(t)
+        assert t == "## 1 Intro\n\na $x^2$ b\n\n[image: https://arxiv.org/html/1v2/f/a.png]\n\n[image: https://arxiv.org/html/1v2/f/b.svg]\n\n| A | 1\n\n| B | 2\n", repr(t)
         print("ok")
     else:
         main()
